@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scheduling Algorithms Input</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}">
+    <script>
+        // JavaScript functions for dynamic form generation and submission
+        function generateProcessInputs() {
+            var numProcesses = parseInt(document.getElementById("numProcesses").value);
+            var processInputs = document.getElementById("processInputs");
+
+            // Clear existing inputs
+            processInputs.innerHTML = '';
+
+            // Create input fields for each process
+            for (var i = 1; i <= numProcesses; i++) {
+                var processDiv = document.createElement("div");
+                processDiv.innerHTML = "Process " + i + ": &nbsp;&nbsp;" +
+                    "Arrival Time: <input type='text' name='arrivalTime" + i + "'>&nbsp;&nbsp;" +
+                    "Execution Time: <input type='text' name='executionTime" + i + "'>";
+                processInputs.appendChild(processDiv);
+            }
+        }
+
+        function startProcessing() {
+            // Submit the form to the Flask server
+            document.getElementById("processForm").submit();
+        }
+    </script>
+</head>
+<body>
+    <h1>Scheduling Algorithms Input</h1>
+    <form id="processForm" action="/process" method="POST">
+        <label class="main_inp" for="numProcesses">Number of Processes:</label>
+        <input type="number" id="numProcesses" name="numProcesses" min="1" oninput="generateProcessInputs()" required>
+
+        <div id="processInputs">
+            <!-- Process input fields will be generated here -->
+        </div>
+
+        <button type="button" onclick="startProcessing()">Start</button>
+    </form>
+</body>
+</html>
