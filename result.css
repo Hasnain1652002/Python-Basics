@@ -1,0 +1,206 @@
+/* Reset some default styles for better consistency */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Style the header */
+h1 {
+    text-align: center;
+    background-color: #333;
+    color: #fff;
+    padding: 20px 0;
+    margin: 0;
+}
+h2, h3, p{
+    text-align: center;
+}
+
+/* Center the content */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+
+/* Style the table */
+table {
+    width: 99%;
+    border-collapse: collapse;
+    margin: 40px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    
+}
+.df_table{
+    width: 95%;
+   
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+/* Style the table header */
+th {
+    background-color: #333;
+    color: #fff;
+}
+
+/* Style alternating rows */
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Style the table cells */
+td {
+    vertical-align: middle;
+
+}
+
+/* Add some padding to the table */
+.container table {
+    margin-top: 20px;
+}
+
+/* .chart {
+    display: flex;
+    align-items: center;
+}
+
+.task {
+    background-color: #3498db;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    margin-right: 5px;
+} */
+
+/* .chart {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.task {
+    background-color: #3498db;
+    color: white;
+    text-align: center;
+    border: 1px solid #2980b9;
+    padding: 10px;
+    border-radius: 5px;
+    margin-right: 5px;
+    position: relative;
+}
+
+.task span {
+    position: absolute;
+    bottom: -20px;
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+} */
+
+
+
+.gantt-chart-container {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: auto;
+    padding: 2px;
+    margin: 2px;
+    margin-bottom: 15px;
+}
+
+.gantt-chart-row {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px; /* Add a gap between server charts */
+}
+
+
+
+.gantt-chart-task-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 15px;
+}
+
+
+
+.gantt-chart-task {
+    background-color: aqua; 
+    text-align: center;
+    border: 1px solid black;
+    padding: 10px;
+    border-radius: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 10vw; /* Adjust the width as needed */
+    max-width: 200px; /* Limit the maximum width */
+}
+
+.gantt-chart-task-timestamp{
+    
+    margin-top: 5px;
+    display: inline; 
+}
+.start-time {
+    border: 5px solid black;
+    border-width: 5px;
+    border-radius: 5px;
+    background-color: black;
+    color: white;
+    margin-right: 70px; /* Adjust the value as needed */
+
+}
+
+.end-time {
+    border: 1px solid black;
+    border-width: 4px;
+    border-radius: 5px ;
+    background-color: black;
+    color: white;
+  
+     /* Adjust the value as needed */
+    
+}
+
+
+.gantt-chart-task-label {
+    color: black;
+    font-weight: bold;
+    margin-top: -5px;
+}
+
+
+
+/* Center the table on smaller screens */
+@media screen and (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    table {
+        width: 100%;
+    }
+}
