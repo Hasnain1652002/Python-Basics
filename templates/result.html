@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='result.css') }}">    
+</head>
+<body>
+    <h1>Result</h1>
+    
+    <h2>Original Table:</h2>
+    <div class="df_table">
+        {{ original_table | safe }}
+    </div>
+
+    <h2>First Come First Serve Algorithm:</h2>
+    <div class="df_table">
+        {{ first_come_table | safe }}
+    </div>
+    <h3>Averages (FCFS):</h3>
+    <p>Average Turnaround Time: {{ tt_fc }}</p>
+    <p>Average Waiting Time: {{ wt_fc }}</p>
+
+    <h2>Gantt-chart (FCFS)</h2>
+    <div class="gantt-chart-container">
+        {% for task in fc_chart %}
+            <div class="gantt-chart-task" data-process="{{ task.process_name }}" data-index="{{ index }}" style="background-color: {{task.color}};">
+                <div class="gantt-chart-task-label">{{ task.process_name }}</div>
+                <div class="gantt-chart-task-timestamp">
+                    <span class="start-time">{{ task.start_time }}</span>
+                    <span class="end-time">{{ task.end_time }}</span>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <h2>Shortest Remaining Time Algorithm:</h2>
+    <div class="df_table">
+        {{ srt_table | safe }}
+    </div>
+    <h3>Averages (SRT):</h3>
+    <p>Average Turnaround Time: {{ tt_srt }}</p>
+    <p>Average Waiting Time: {{ wt_srt }}</p>
+
+    <h2>Gantt-chart (SRT)</h2>
+    <div class="gantt-chart-container">
+        {% for task in srt_chart %}
+            <div class="gantt-chart-task" data-process="{{ task.id }}" data-index="{{ index }}" style="background-color: {{task.color}};">
+                <div class="gantt-chart-task-label">{{ task.id }}</div>
+                <div class="gantt-chart-task-timestamp">
+                    <span class="start-time">{{ task.start_time }}</span>
+                    <span class="end-time">{{ task.end_time }}</span>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <h2>Shortest Job First Algorithm:</h2>
+    <div class="df_table">
+        {{ sjf_table | safe }}
+    </div>
+    <h2>Highest Response Ratio Next Algorithm:</h2>
+    <div class="df_table">
+        {{ hrrn_table | safe }}
+    </div>
+</body>
+</html>

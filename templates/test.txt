@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='result.css') }}">
+</head>
+<body>
+    <h1>Result</h1>
+    <h2>Original Table:</h2>
+    {{ original_table | safe }}
+
+    
+    <h2>First Come First Serve Algorithm:</h2>
+    {{ first_come_table | safe }}
+
+    <div class="gantt-chart-container">
+        {% for task in fc_chart %}
+         <div class="gantt-chart-task" style="background-color: {{ assignColor(task.process_name) }}">
+                <div class="gantt-chart-task-label">{{ task.process_name }}</div>
+                <div class="gantt-chart-task-timestamp">
+                    Start: {{ task.start_time }} | End: {{ task.end_time }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+
+    <h2>Shortest Remaining Algorithm:</h2>
+
+    {{ srt_table | safe }}
+
+    <div class="gantt-chart-container">
+        {% for task in srt_chart %}
+            <div class="gantt-chart-task" style="background-color: {{ assignColor(task.id) }}">
+                <div class="gantt-chart-task-label">{{ task.id }}</div>
+                <div class="gantt-chart-task-timestamp">
+                    Start: {{ task.start_time }} | End: {{ task.end_time }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+
+    <h2>Shortest Job first Algorithm:</h2>
+    {{ sjf_table | safe }}
+
+    <h2>Highest Response Ration Next Algorithm:</h2>
+    {{ hrrn_table | safe }}
+
+
+<script>
+    function assignColor(processName) {
+        // This function generates and returns a color based on the process name
+        const colors = ["blue", "yellow", "green", "red", "purple", "orange"];
+        const index = processName.charCodeAt(0) % colors.length;
+        return colors[index];
+    }
+</script>
+</body>
+</html>
