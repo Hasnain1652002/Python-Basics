@@ -1,60 +1,79 @@
-from flask import Flask, render_template, request
-import pandas as pd
-from FCFS import FCFS  # Import your FCFS function
-from HRRN import HRRN  # Import your HRRN function
-from SJF import SJF  # Import your SJF function
-from SRT import SRT  # Import your SRT function
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
+from arrival_table import construct_avg_arrival_lookup_table
+from simulation import construct_simulation_table
+from queuing_formulae import calculate_averages_by_formula
 
 app = Flask(__name__)
+CORS(app)
 
-@app.route('/')
-def index():
-    return render_template('index.html')
 
-@app.route('/process', methods=['POST'])
-def process():
-    num_processes = int(request.form['numProcesses'])
-    process_name = []
-    arrival = []
-    execution = []
+@app.route("/get-interarrival-lookup-table", methods=["GET"])
+def get_interarrival_lookup_table():
+    print(request.args)
+    arrival_dist_type = eval(request.args.get("arrivalDistType"))
+    arrival_mean = eval(request.args.get("meanArrival"))
+    arrival_variance = eval(request.args.get("varianceArrival"))
+    arrival_table = construct_avg_arrival_lookup_table(
+        arrival_dist_type, arrival_mean, arrival_variance
+    )
+    response = arrival_table.values.tolist()
+    return jsonify(response), 200
 
-    for i in range(1, num_processes + 1):
-        arrival_time = request.form.get(f'arrivalTime{i}')
-        execution_time = request.form.get(f'executionTime{i}')
 
-        if arrival_time and execution_time:
-            process_name.append(f'Process {i}')
-            arrival.append(int(arrival_time))
-            execution.append(int(execution_time))
+@app.route("/get-complete-simulation", methods=["GET"])
+def get_complete_simulation():
+    print(request.args)
+    num_of_servers = eval(request.args.get("numOfServers"))
+    arrival_dist_type = eval(request.args.get("arrivalDistType"))
+    arrival_mean = eval(request.args.get("meanArrival"))
+    service_dist_type = eval(request.args.get("serviceDistType"))
+    service_mean = eval(request.args.get("meanService"))
+    arrival_variance = eval(request.args.get("varianceArrival"))
+    service_variance = eval(request.args.get("varianceService"))
 
-    data = {
-        'process_name': process_name,
-        'arrival_time': arrival,
-        'execution_time': execution
+    simulation_table, servers, averages = construct_simulation_table(
+        num_of_servers,
+        arrival_dist_type,
+        arrival_mean,
+        service_dist_type,
+        service_mean,
+        arrival_variance,
+        service_variance,
+    )
+
+    response = {
+        "simulationTable": simulation_table.values.tolist(),
+        "servers": servers,
+        "averages": averages,
     }
+    return jsonify(response), 200
 
-    if not data:
-        return "No data entered. Please go back and enter process details."
 
-    df = pd.DataFrame(data)  # Creating the original DataFrame
+@app.route("/get-averages", methods=["GET"])
+def get_averages():
+    print(request.args)
+    num_of_servers = eval(request.args.get("numOfServers"))
+    arrival_dist_type = eval(request.args.get("arrivalDistType"))
+    arrival_mean = eval(request.args.get("meanArrival"))
+    service_dist_type = eval(request.args.get("serviceDistType"))
+    service_mean = eval(request.args.get("meanService"))
+    arrival_variance = eval(request.args.get("varianceArrival"))
+    service_variance = eval(request.args.get("varianceService"))
 
-    # Calling scheduling algorithms and getting results
-    fc_data, fc_chart, wt_fc, tt_fc , ut_fc = FCFS(df)
-    srt_data, srt_chart, wt_srt, tt_srt , ut_srt = SRT(df)
-    sjf_data, sjf_chart,wt_sjf, tt_sjf , ut_sjf = SJF(df)
-    hrrn_data, hrrn_chart, wt_hrrn, tt_hrrn , ut_hrrn = HRRN(df)
+    response = calculate_averages_by_formula(
+        num_of_servers,
+        arrival_dist_type,
+        arrival_mean,
+        service_dist_type,
+        service_mean,
+        arrival_variance,
+        service_variance,
+    )
 
-    # Converting DataFrames to HTML tables
-    original_table = df.to_html(classes='table table-bordered table-striped', index=False)
-    first_come_table = fc_data.to_html(index=False)
-    hrrn_table = hrrn_data.to_html(index=False)
-    srt_table = srt_data.to_html(index=False)
-    sjf_table = sjf_data.to_html(index=False)
+    return jsonify(response), 200
 
-    return render_template('result.html', original_table=original_table, first_come_table=first_come_table,
-                           fc_chart=fc_chart, srt_table=srt_table, srt_chart=srt_chart, sjf_table=sjf_table,
-                           hrrn_table=hrrn_table, wt_fc=wt_fc, tt_fc=tt_fc, ut_srt=ut_srt, tt_srt=tt_srt,
-                           wt_srt=wt_srt, ut_hrrn=ut_hrrn, tt_hrrn=tt_hrrn, wt_hrrn=wt_hrrn)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
