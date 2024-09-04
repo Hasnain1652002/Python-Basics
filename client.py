@@ -1,3 +1,4 @@
+
 import os
 import socket
 from tqdm import tqdm
@@ -11,35 +12,33 @@ FILENAME = "friends-final.txt"
 FILESIZE = os.path.getsize(FILENAME)
 
 def main():
-    try:
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client.connect(ADDR)
+    """ TCP socket and connecting to the server """
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client.connect(ADDR)
 
-        data = f"{FILENAME}_{FILESIZE}"
-        client.send(data.encode(FORMAT))
-        msg = client.recv(SIZE).decode(FORMAT)
-        print(f"SERVER: {msg}")
+    """ Sending the filename and filesize to the server. """
+    data = f"{FILENAME}_{FILESIZE}"
+    client.send(data.encode(FORMAT))
+    msg = client.recv(SIZE).decode(FORMAT)
+    print(f"SERVER: {msg}")
 
-        bar = tqdm(range(FILESIZE), f"Sending {FILENAME}", unit="B", unit_scale=True, unit_divisor=SIZE)
+    """ Data transfer. """
+    bar = tqdm(range(FILESIZE), f"Sending {FILENAME}", unit="B", unit_scale=True, unit_divisor=SIZE)
 
-        with open(FILENAME, "rb") as f:
-            while True:
-                data = f.read(SIZE)
+    with open(FILENAME, "r") as f:
+        while True:
+            data = f.read(SIZE)
 
-                if not data:
-                    break
+            if not data:
+                break
 
-                client.send(data)
-                msg = client.recv(SIZE).decode(FORMAT)
+            client.send(data.encode(FORMAT))
+            msg = client.recv(SIZE).decode(FORMAT)
 
-                bar.update(len(data))
+            bar.update(len(data))
 
-        client.close()
-        print("[+] File sent successfully.")
-    except ConnectionRefusedError:
-        print("[-] Error: The server is offline or cannot be reached.")
-    except Exception as e:
-        print(f"[-] An error occurred: {e}")
+    """ Closing the connection """
+    client.close()
 
 if __name__ == "__main__":
     main()
