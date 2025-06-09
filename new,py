@@ -1,0 +1,146 @@
+def input_matrix():
+    matrix = []
+    print("\nEnter aij ")
+    for i in range(3):
+        row = []
+        for j in range(3):
+            row.append(float(input(f"a{i+1}{j+1}: ")))
+        matrix.append(row)
+
+    print("\nEnter bij :")
+    for i in range(3):
+        matrix[i].append(float(input()))
+
+    return matrix
+
+def display_matrix(matrix, message="Augmented matrix A:"):
+    print(f"\n{message}")
+    for i in range(len(matrix)):
+        print(matrix[i])
+
+def rowScale(A, r, k):
+    for i in range(len(A[r-1])):
+        A[r-1][i] = A[r-1][i] * k
+
+def rowSwap(A, r1, r2):
+    A[r1-1], A[r2-1] = A[r2-1], A[r1-1]
+
+def rowAddScale(A, r1, r2, k):
+    for i in range(len(A[0])):
+        A[r2-1][i] = A[r2-1][i] + k * A[r1-1][i]
+
+def gaussElimination(A):
+    rows = len(A)
+
+    for i in range(rows):
+        if A[i][i] == 0:
+            for j in range(i+1, rows):
+                if A[j][i] != 0:
+                    rowSwap(A, i+1, j+1)
+                    break
+
+        for j in range(i+1, rows):
+            if A[j][i] != 0:
+                factor = -A[j][i] / A[i][i]
+                rowAddScale(A, i+1, j+1, factor)
+
+    return A
+
+def check_solutions(A):
+    rows = len(A)
+    cols = len(A[0]) - 1
+
+    rank_A = 0
+    rank_A_extended = 0
+
+    for row in A:
+        if any(row[:-1]):  # Check if at least one coefficient is nonzero
+            rank_A += 1
+        if any(row):  # Check if the entire row is nonzero (including last column)
+            rank_A_extended += 1
+
+    if rank_A == rank_A_extended == cols:
+        return "unique"
+    elif rank_A == rank_A_extended and rank_A < cols:
+        return "infinite"
+    elif rank_A < rank_A_extended:
+        return "no solution"
+    return "unknown"
+
+def format_solution_infinite(A):
+    """Finds the solution in vector equation form for infinite solutions."""
+    rows = len(A)
+    cols = len(A[0]) - 1
+
+    pivot_positions = []
+    free_variables = []
+
+    for i in range(rows):
+        for j in range(cols):
+            if A[i][j] != 0:
+                pivot_positions.append(j)
+                break
+
+    all_variables = set(range(cols))
+    dependent_vars = set(pivot_positions)
+    free_variables = sorted(all_variables - dependent_vars)
+
+    # Construct the general solution
+    solution = {}
+    for i in range(rows):
+        if i < len(pivot_positions):
+            pivot_col = pivot_positions[i]
+            solution[pivot_col] = A[i][-1]  # Initialize with the constant term
+
+            for j in range(pivot_col + 1, cols):
+                if j in free_variables:
+                    solution[pivot_col] -= A[i][j] * f"s{free_variables.index(j) + 1}"
+
+    # Format the solution
+    formatted_solution = []
+    for var in range(cols):
+        if var in pivot_positions:
+            formatted_solution.append(f"{solution[var]:.6f}")
+        else:
+            formatted_solution.append(f"s{free_variables.index(var) + 1}")
+
+    return f"\nThis system of linear equations has infinite solutions: ({', '.join(formatted_solution)})^T"
+
+def backSubstitution(A):
+    rows = len(A)
+
+    solution_type = check_solutions(A)
+
+    if solution_type == "no solution":
+        print("\nThis system of linear equations has no solution.")
+        return None
+    elif solution_type == "infinite":
+        print(format_solution_infinite(A))
+        return None
+
+    x = [0] * rows
+
+    for i in range(rows - 1, -1, -1):
+        x[i] = A[i][-1]
+
+        for j in range(i + 1, rows):
+            x[i] -= A[i][j] * x[j]
+
+        x[i] /= A[i][i]
+
+    print("\nThis system of linear equations has the unique solution: (", ", ".join(f"{val:.6f}" for val in x), ")^T")
+
+    return x
+
+# Example matrix
+matrix = [
+    [1, 2, 3, 1],
+    [2, 4, 6, 2],
+    [7, 8, 9, 0]
+]
+
+display_matrix(matrix)
+gaussElimination(matrix)
+display_matrix(matrix, "Row echelon form after Gaussian elimination:")
+
+backSubstitution(matrix)
